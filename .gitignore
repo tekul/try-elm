@@ -1,0 +1,15 @@
+dist
+dist-newstyle
+.ghc.environment*
+.stack-work
+.atomist.yml
+elm-stuff
+*.eventlog
+*.profiterole.html
+*.profiterole.txt
+*.prof
+*.elmi
+*.elmo
+node_modules
+tmp
+examples/output
