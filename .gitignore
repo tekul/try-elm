@@ -12,4 +12,4 @@ elm-stuff
 *.elmo
 node_modules
 tmp
-examples/output
+output/
