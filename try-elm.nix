@@ -1,7 +1,7 @@
 { mkDerivation, aeson, array, base, blaze-html, blaze-markup
-, bytestring, containers, directory, exceptions, filepath, mtl
-, process, servant-blaze, servant-server, stdenv, text, time, wai
-, wai-extra, warp
+, bytestring, containers, directory, exceptions, filepath
+, http-api-data, mtl, process, servant-blaze, servant-server
+, stdenv, text, time, wai, wai-extra, warp
 }:
 mkDerivation {
   pname = "try-elm";
@@ -11,8 +11,8 @@ mkDerivation {
   isExecutable = true;
   executableHaskellDepends = [
     aeson array base blaze-html blaze-markup bytestring containers
-    directory exceptions filepath mtl process servant-blaze
-    servant-server text time wai wai-extra warp
+    directory exceptions filepath http-api-data mtl process
+    servant-blaze servant-server text time wai wai-extra warp
   ];
   license = stdenv.lib.licenses.bsd3;
 }

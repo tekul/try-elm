@@ -6,6 +6,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TypeOperators #-}
 
 module Main where
@@ -15,34 +16,39 @@ import Control.Monad.Except
 import Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
+import GHC.Generics hiding (moduleName)
 import Network.Wai (Application)
 import Network.Wai.Handler.Warp (run)
 import Servant
 import Servant.HTML.Blaze (HTML)
 import System.IO.Error (isDoesNotExistError)
 import Text.Blaze.Html5 (Html, preEscapedText)
+import Web.Internal.FormUrlEncoded (FromForm)
 
 import qualified Compiler
 import qualified Generate
 
-type ElmSource = Text
+newtype ElmSource = ElmSource { code :: Text } deriving (Generic)
+
+deriving instance MimeUnrender PlainText ElmSource
+instance FromForm ElmSource
 
 type Api =
-    "assets" :> Raw
-    :<|> "compile" :> ReqBody '[PlainText] ElmSource :> Post '[HTML] Html
+         "compile" :> ReqBody '[PlainText, FormUrlEncoded] ElmSource :> Post '[HTML] Html
     :<|> "examples" :> Capture "exampleName" Text :> Get '[HTML] Html
+    :<|> Raw
 
 api :: Proxy Api
 api = Proxy
 
 server :: Server Api
 server =
-    serveDirectoryWebApp "static/assets"
-    :<|> compile
+         compile
     :<|> examples
+    :<|> serveDirectoryWebApp "static"
 
-compile :: Text -> Handler Html
-compile src = do
+compile :: ElmSource -> Handler Html
+compile (ElmSource src)= do
     result <- liftIO $ Compiler.compile src
     return $ case result of
         Compiler.Success moduleName js -> Generate.compilerSuccess moduleName js
@@ -54,7 +60,9 @@ examples name =
     serveFile $ "static/examples/" ++ T.unpack name ++ ".html"
 
 serveFile :: FilePath -> Handler Html
-serveFile name = catchIf isDoesNotExistError (liftIO $ preEscapedText <$> T.readFile name) (const notFound)
+serveFile name = do
+    liftIO $ print name
+    catchIf isDoesNotExistError (liftIO $ preEscapedText <$> T.readFile name) (const notFound)
 
 notFound :: Handler Html
 notFound = throwError err404
