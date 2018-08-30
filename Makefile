@@ -4,6 +4,7 @@ static: examples frontend
 	mkdir -p static/editor
 	cp -ur examples/output/* static/examples
 	cp -ur frontend/output/* static/editor
+	cp -ur assets static/
 
 .PHONY: clean
 clean:
