@@ -12,4 +12,5 @@ elm-stuff
 *.elmo
 node_modules
 tmp
+static
 output/
