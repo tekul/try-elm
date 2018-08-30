@@ -1,0 +1,12 @@
+#!/bin/bash
+
+cat << EOF > $1
+<!DOCTYPE html>
+<head>
+<title>$2</title>
+</head>
+<frameset cols="50%,50%">
+<frame src="/examples/code/$3" />
+<frame name="output" src="/examples/result/$3" />
+</frameset>
+EOF

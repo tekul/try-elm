@@ -1,0 +1,29 @@
+#!/bin/bash
+
+cat << EOF > $1
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>$2</title>
+  <meta charset="utf-8">
+  <link type="text/css" rel="stylesheet" href="/assets/codemirror-5.0/lib/codemirror.css">
+  <link type="text/css" rel="stylesheet" href="/assets/codemirror-5.0/theme/elegant.css">
+  <link type="text/css" rel="stylesheet" href="/assets/codemirror-5.0/theme/mbo.css">
+  <link type="text/css" rel="stylesheet" href="/editor/editor.css">
+  <script src="/assets/codemirror-5.0/lib/codemirror.js"></script>
+  <script src="/assets/codemirror-5.0/mode/elm/elm.js"></script>
+  <script src="/editor/controls.js"></script>
+</head>
+<body>
+<form id="inputForm" action="/compile" method="post" target="output">
+<div id="controls"></div>
+<div id="editor_box"></div>
+<textarea name="code" id="code" style="display: none;">
+$(cat $2)
+</textarea>
+</form>
+</body>
+<script src="/editor/editor.js"></script>
+</html>
+EOF
