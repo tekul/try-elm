@@ -1,35 +1,42 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Compiler (init, compile, Result(..)) where
+module Compiler
+    (init, compile, Result(..))
+where
 
-import Control.Exception (SomeException, try)
-import Data.Text (Text)
+import           Control.Exception (SomeException, try)
+import           Data.Text (Text)
 import qualified Data.Text as T
 import qualified Data.Text.IO as T
 import qualified Data.Time.Clock.POSIX as Time
-import Prelude hiding (init)
-import System.Directory
-  ( createDirectoryIfMissing, withCurrentDirectory
-  , copyFile, removeFile
-  , doesFileExist
-  )
+import           Prelude hiding (init)
+import           System.Directory
+    ( createDirectoryIfMissing
+    , withCurrentDirectory
+    , removeFile
+    , doesFileExist
+    )
 import System.Exit (ExitCode(..), exitWith)
 import System.FilePath ((</>), (<.>))
-import System.Process (rawSystem, readProcessWithExitCode)
+import System.Process (readProcessWithExitCode)
 
+import qualified ElmJson
 
 data Result
     = Success Text Text
     | Error Text
     | Crash Text
-
+      deriving (Show)
 
 init :: IO ()
 init = do
     createDirectoryIfMissing True tempDirectory
-    copyFile "elm.json" (tempDirectory </> "elm.json")
-    code <- rawSystem "elm" ["make"]
-    return ()
+    T.writeFile (tempDirectory </> "elm.json") ElmJson.defaultBuild
+    let testCode = T.concat ["import Html\n", "main = Html.text \"Hi\"\n"]
+    testResult <- compile testCode
+    case testResult of
+        Crash msg -> print msg >> exitWith (ExitFailure 1)
+        _ -> return ()
 
 tempDirectory :: FilePath
 tempDirectory = "tmp"
@@ -69,9 +76,7 @@ addHeader name elmSource =
 
 pathToArtifact :: String -> String -> FilePath
 pathToArtifact name ext =
-    "elm-stuff" </> "build-artifacts" </> "0.19.0"
-    </> "user" </> "project" </> "1.0.0"
-    </> name <.> ext
+    "elm-stuff" </> "0.19.0" </> name <.> ext
 
 getTempName :: IO String
 getTempName =

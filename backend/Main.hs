@@ -63,4 +63,4 @@ app :: Application
 app = serve api server
 
 main :: IO ()
-main = run 8000 app
+main = Compiler.init >> run 8000 app

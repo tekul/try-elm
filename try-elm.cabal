@@ -10,6 +10,7 @@ executable backend
   main-is:           Main.hs
   other-modules:       Compiler
                      , Generate
+                     , ElmJson
   ghc-options:       -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:       aeson
                      , array
