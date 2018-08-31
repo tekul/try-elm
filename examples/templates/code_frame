@@ -18,10 +18,11 @@ cat << EOF > $1
 <body>
 <form id="inputForm" action="/compile" method="post" target="output">
 <div id="controls"></div>
-<div id="editor_box"></div>
+<div id="editor_box">
 <textarea name="code" id="code" style="display: none;">
 $(cat $2)
 </textarea>
+</div>
 </form>
 </body>
 <script src="/editor/editor.js"></script>
